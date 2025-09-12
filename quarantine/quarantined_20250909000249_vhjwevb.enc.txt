@@ -1,0 +1,7 @@
+Quarantined at 2025-09-09 00:02:49
+Original filename: vhjwevb.enc
+Process: jcbkqjb
+Action: kjcbwkd
+
+Reasons:
+ - File has ransomware-like extension

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Login — Ransomware Lab{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card bg-secondary text-light">
+      <div class="card-body">
+        <h3 class="card-title">🔐 Login</h3>
+        <p class="text-muted">Demo: <strong>analyst/password123</strong> or <strong>admin/adminpass</strong></p>
+        <form method="POST" action="{{ url_for('login') }}">
+          <div class="mb-2">
+            <input class="form-control" name="username" placeholder="username" required>
+          </div>
+          <div class="mb-3">
+            <input type="password" class="form-control" name="password" placeholder="password" required>
+          </div>
+          <button class="btn btn-primary" type="submit">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

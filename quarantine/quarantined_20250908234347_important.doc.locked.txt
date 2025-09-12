@@ -1,0 +1,9 @@
+Quarantined at 2025-09-08 23:43:47
+Original filename: important.doc.locked
+Process: evil-encryptor
+Action: mass encryption
+
+Reasons:
+ - File has ransomware-like extension
+ - Suspicious process name
+ - Dangerous action detected

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Ransomware Lab{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-12">
+    <div class="card bg-secondary text-light">
+      <div class="card-body">
+        <h4>Submit Event for Detection</h4>
+        <form id="eventForm" method="POST" action="{{ url_for('detect_form') }}">
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <input class="form-control" name="filename" placeholder="Filename (e.g. important.doc.locked)" required>
+            </div>
+            <div class="col-md-4 mb-2">
+              <input class="form-control" name="process" placeholder="Process (e.g. evil-encryptor)" required>
+            </div>
+            <div class="col-md-3 mb-2">
+              <input class="form-control" name="action" placeholder="Action (e.g. mass encryption)" required>
+            </div>
+            <div class="col-md-1 mb-2">
+              <button class="btn btn-success w-100" type="submit">Analyze</button>
+            </div>
+          </div>
+        </form>
+        <div class="mt-2 text-muted">Tip: You can also POST JSON to <code>/api/detect</code>.</div>
+      </div>
+    </div>
+  </div>
+<div style="margin-bottom:15px;">
+  <a href="{{ url_for('clear_logs') }}" class="btn btn-danger">
+    🗑 Clear All Logs
+  </a>
+</div>
+
+  <div class="col-12">
+    <div class="card bg-secondary text-light">
+      <div class="card-body">
+        <h4>Detection Log</h4>
+        <div class="mb-2">
+          <label for="filterStatus" class="form-label">Filter status</label>
+          <select id="filterStatus" class="form-select" style="width:200px;">
+            <option value="">All</option>
+            <option value="Suspicious">Suspicious</option>
+            <option value="Normal">Normal</option>
+          </select>
+        </div>
+
+        <table id="logTable" class="table table-striped table-hover table-sm" style="width:100%">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Time</th>
+              <th>Filename</th>
+              <th>Process</th>
+              <th>Action</th>
+              <th>Status</th>
+              <th>Details</th>
+              <th>Quarantined</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Fetch logs and populate DataTable (main.js also initializes DataTable)
+  $(document).ready(function() {
+    loadLogs();
+
+    $('#filterStatus').on('change', function() {
+      loadLogs($(this).val());
+    });
+  });
+
+  function loadLogs(statusFilter = "") {
+    let url = '/api/logs?limit=1000';
+    if (statusFilter) url += '&status=' + encodeURIComponent(statusFilter);
+    $.getJSON(url).done(function(data) {
+      // rebuild the table
+      const table = $('#logTable').DataTable();
+      table.clear();
+      data.forEach(function(item) {
+        table.row.add([
+          item.id,
+          item.time,
+          item.filename,
+          item.process,
+          item.action,
+          item.status === 'Suspicious' ? '<span class="badge bg-danger">Suspicious</span>' : '<span class="badge bg-success">Normal</span>',
+          item.reasons.length ? item.reasons.join(', ') : 'N/A',
+          item.quarantined ? ('Yes<br><small>' + item.quarantine_path + '</small>') : 'No'
+        ]);
+      });
+      table.draw();
+    }).fail(function(err) {
+      console.error('Failed fetching logs', err);
+    });
+  }
+</script>
+{% endblock %}
